@@ -13,6 +13,7 @@ docs = {
     "spec.txt": "These specifications define the technical requirements for the equipment.",
 }
 
+
 # A tool to read a doc
 @mcp.tool(
     name="read_doc_contents",
@@ -25,7 +26,6 @@ def read_document(
         raise ValueError(f"Doc with id {doc_id} not found")
     
     return docs[doc_id]
-
 
 # A tool to edit a doc
 @mcp.tool(
@@ -43,8 +43,25 @@ def edit_document(
     docs[doc_id] = docs[doc_id].replace(old_str, new_str)
     
 
-# TODO: Write a resource to return all doc id's
-# TODO: Write a resource to return the contents of a particular doc
+# A resource to return all doc id's
+@mcp.resource(
+    "docs://documents",
+    mime_type="application/json"
+)
+def list_docs() -> list[str]:
+    return list(docs.keys())
+
+# A resource to return the contents of a particular doc
+@mcp.resource(
+    "docs://documents/{doc_id}", # doc_id is an wild card
+    mime_type="text/plain"
+)
+def fetch_doc(doc_id: str) -> str:
+    if doc_id not in docs:
+        raise ValueError(f"Doc with id {doc_id} not found")
+    return docs[doc_id]
+
+
 # TODO: Write a prompt to rewrite a doc in markdown format
 # TODO: Write a prompt to summarize a doc
 
